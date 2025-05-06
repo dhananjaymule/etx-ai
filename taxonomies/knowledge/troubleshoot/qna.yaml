@@ -52,3 +52,14 @@ seed_examples:
          How to check configuration of kdump ?
         answer: |
          Run the command "sudo systemctl status kdump"
+
+ - context: |
+         Use case 
+    questions_and_answers:
+       - question: |
+         What are the three main use cases covered by this SOP?
+        answer: |
+         The SOP covers:
+              Kdump with delayed fencing in PCS clusters
+              Early Kdump configuration for capturing crashes earlier in boot
+              Storing crash dumps over network using NFS or SSH
