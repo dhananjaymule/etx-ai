@@ -1,0 +1,15 @@
+version: 1
+domain: Linux kernel Dump Configuration<
+created_by: Shinji Kito
+document_outline:
+  - context: |
+        Kdump Configuration for PCS Cluster (Delayed Fencing), Early Kdump, and Network Targets
+    questions_and_answers:
+      - question: |
+           <A question used for synthetic data generation. Based upon the previous context.>
+        answer: |
+           <The desired response for the question. Based upon the previous context.>
+      - question: |
+        answer: |
+      - question: |
+        answer: |
