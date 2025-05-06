@@ -58,4 +58,8 @@ seed_examples:
 
           - question: "What package must be installed to use fence_kdump_nodes?"
             answer: "To use `fence_kdump_nodes`, the package `fence-agents-kdump` must be installed on the system. This package provides the necessary scripts and fencing agents for integrating kdump crash notification with the PCS cluster’s fencing mechanism."
-
+document:
+  repo: https://github.com/dhananjaymule/etx-ai.git
+  commit: 4dbfbc2b91a508e23b21a302bde67e2b0760ee8b
+  patterns:
+   - test-doc-01.md
