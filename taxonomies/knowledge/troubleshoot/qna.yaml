@@ -21,6 +21,10 @@ seed_examples:
            For which RHEL version it will be applicable ?
         answer: |
            it is applicable for all supported RHEL version, primarily version 7, 8, 9
+       - question: |
+           How to reserve the memory to store dump image?
+        answer: |
+           You need to add kernel command line: GRUB\_CMDLINE\_LINUX="crashkernel=512M ..."
   - context: |
          Configuring kdump service 
     questions_and_answers:
@@ -43,4 +47,4 @@ seed_examples:
          to use  ssh target add configuration to file /etc/kdump.conf
            ssh user@remote-server
          please note root users ssh key need to be added on target machine 
-           ssh-copy-id user@remote-server
+           ssh-copy-id user@remote-server     
