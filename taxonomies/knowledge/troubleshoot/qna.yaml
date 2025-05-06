@@ -1,15 +1,46 @@
 version: 1
 domain: Linux kernel Dump Configuration<
 created_by: Shinji Kito
-document_outline:
+document_outline: |
+       Standered operating procedure (SOP) to configure kernel core dump on Red Hat Enterprise linux (RHEL)
+seed_examples:
   - context: |
-        Kdump Configuration for PCS Cluster (Delayed Fencing), Early Kdump, and Network Targets
+        Installing packages and enabling service   
     questions_and_answers:
       - question: |
-           <A question used for synthetic data generation. Based upon the previous context.>
+           Which packages are required to configure kernel core dump (kdump) ?
         answer: |
-           <The desired response for the question. Based upon the previous context.>
+           you need to install "kexec-tools" rpm on the system, if you want to use network file system (NFS) insatall "nfs-utils" as-well
+           To install those rpms you can use command "sudo yum install kexec-tools nfs-utils"
       - question: |
+           how to enable kernel core dump service (kdump) ?
         answer: |
+           it can be managed as systemd service, to manager those service, you can use "systemctl" utility, 
+           the command is "sudo systemctl enable --now kdump"
       - question: |
+           For which RHEL version it will be applicable ?
         answer: |
+           it is applicable for all supported RHEL version, primarily version 7, 8, 9
+  - context: |
+         Configuring kdump service 
+    questions_and_answers:
+      - question: |
+         Which configuration file we can use configure kdump ?
+        answer: |
+         kdump configurations can be added to file "/etc/kdump.conf", fore more details check manual entry (man) for it, with command "man 5 kdump", additionally you can update file "/etc/sysconfig/kdump" 
+      - question: |
+         How to enable early kdump ?
+        answer: |
+         Add parameter to file /etc/sysconfig/kdump  "KDUMP_COMMANDLINE_APPEND="earlykdump"
+      - question: |
+         How to use network target ?
+        answer: |
+         kdump allow ssh and NFS targets, 
+         to use NFS target add configuration to file /etc/kdump.conf
+           nfs nfs-server-url:/path
+          example: 
+           nfs 10.10.10.5:/kdump
+         to use  ssh target add configuration to file /etc/kdump.conf
+           ssh user@remote-server
+         please note root users ssh key need to be added on target machine 
+           ssh-copy-id user@remote-server
