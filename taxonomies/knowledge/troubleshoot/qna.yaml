@@ -13,7 +13,7 @@ seed_examples:
             answer: "This SOP applies to all systems running Red Hat Enterprise Linux (RHEL) versions 7, 8, and 9. These distributions are commonly used in enterprise environments for running clustered applications under PCS cluster management."
 
           - question: "Why is consistent fencing behavior important in PCS clusters?"
-            answer: "Consistent fencing behavior is critical in PCS clusters to ensure the reliability and integrity of the entire cluster during node failures or crashes. It prevents split-brain scenarios where two nodes might incorrectly believe they are the active node, leading to data corruption or service disruption. Proper fencing coordinates which node is to be isolated or rebooted, allowing services to fail over cleanly."
+            answer: "Consistent fencing behavior is critical in Pace Maker cluster (PCS) clusters to ensure the reliability and integrity of the entire cluster during node failures or crashes. It prevents split-brain scenarios where two nodes might incorrectly believe they are the active node, leading to data corruption or service disruption. Proper fencing coordinates which node is to be isolated or rebooted, allowing services to fail over cleanly."
 
       - context: "Prerequisites for Kdump Configuration"
         questions_and_answers:
