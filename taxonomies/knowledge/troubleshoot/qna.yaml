@@ -4,62 +4,58 @@ created_by: Shinji Kito
 document_outline: |
        Standered operating procedure (SOP) to configure kernel core dump on Red Hat Enterprise linux (RHEL)
 seed_examples:
-  - context: |
-        Installing packages and enabling service   
-    questions_and_answers:
-      - question: |
-           Which packages are required to configure kernel core dump (kdump) ?
-        answer: |
-           you need to install "kexec-tools" rpm on the system, if you want to use network file system (NFS) insatall "nfs-utils" as-well
-           To install those rpms you can use command "sudo yum install kexec-tools nfs-utils"
-      - question: |
-           how to enable kernel core dump service (kdump) ?
-        answer: |
-           it can be managed as systemd service, to manager those service, you can use "systemctl" utility, 
-           the command is "sudo systemctl enable --now kdump"
-      - question: |
-           For which RHEL version it will be applicable ?
-        answer: |
-           it is applicable for all supported RHEL version, primarily version 7, 8, 9
-       - question: |
-           How to reserve the memory to store dump image?
-        answer: |
-           You need to add kernel command line: GRUB\_CMDLINE\_LINUX="crashkernel=512M ..."
-  - context: |
-         Configuring kdump service 
-    questions_and_answers:
-      - question: |
-         Which configuration file we can use configure kdump ?
-        answer: |
-         kdump configurations can be added to file "/etc/kdump.conf", fore more details check manual entry (man) for it, with command "man 5 kdump", additionally you can update file "/etc/sysconfig/kdump" 
-      - question: |
-         How to enable early kdump ?
-        answer: |
-         Add parameter to file /etc/sysconfig/kdump  "KDUMP_COMMANDLINE_APPEND="earlykdump"
-      - question: |
-         How to use network target ?
-        answer: |
-         kdump allow ssh and NFS targets, 
-         to use NFS target add configuration to file /etc/kdump.conf
-           nfs nfs-server-url:/path
-          example: 
-           nfs 10.10.10.5:/kdump
-         to use  ssh target add configuration to file /etc/kdump.conf
-           ssh user@remote-server
-         please note root users ssh key need to be added on target machine 
-           ssh-copy-id user@remote-server     
-       - question: |
-         How to check configuration of kdump ?
-        answer: |
-         Run the command "sudo systemctl status kdump"
+      - context: "Purpose and Scope of the SOP"
+        questions_and_answers:
+          - question: "What is the main objective of this SOP?"
+            answer: "The main objective of this Standard Operating Procedure (SOP) is to provide detailed and standardized instructions for configuring kdump on nodes that are part of a PCS-managed high-availability cluster. It specifically addresses advanced kdump scenarios including delayed fencing integration, early kdump for capturing memory during early crash stages, and configuring remote storage of crash dumps via network protocols such as NFS and SSH."
 
- - context: |
-         Use case 
-    questions_and_answers:
-       - question: |
-         What are the three main use cases covered by this SOP?
-        answer: |
-         The SOP covers:
-              Kdump with delayed fencing in PCS clusters
-              Early Kdump configuration for capturing crashes earlier in boot
-              Storing crash dumps over network using NFS or SSH
+          - question: "Which Linux distributions are covered by this SOP?"
+            answer: "This SOP applies to all systems running Red Hat Enterprise Linux (RHEL) versions 7, 8, and 9. These distributions are commonly used in enterprise environments for running clustered applications under PCS cluster management."
+
+          - question: "Why is consistent fencing behavior important in PCS clusters?"
+            answer: "Consistent fencing behavior is critical in PCS clusters to ensure the reliability and integrity of the entire cluster during node failures or crashes. It prevents split-brain scenarios where two nodes might incorrectly believe they are the active node, leading to data corruption or service disruption. Proper fencing coordinates which node is to be isolated or rebooted, allowing services to fail over cleanly."
+
+      - context: "Prerequisites for Kdump Configuration"
+        questions_and_answers:
+          - question: "What level of access is required on the cluster nodes to perform the configuration?"
+            answer: "Root or sudo-level administrative access is required on all cluster nodes to perform the necessary configurations for kdump. This level of access is essential for installing packages, editing system files, configuring GRUB parameters, and restarting services."
+
+          - question: "What packages must be installed before configuring kdump with NFS support?"
+            answer: "The required packages include `kexec-tools`, which provides the utilities for loading a crash kernel; `nfs-utils`, for NFS support to allow storing crash dumps on a network share; and `fence-agents`, which are needed for handling fencing mechanisms integrated with kdump."
+
+          - question: "What infrastructure is needed for storing crash dumps over the network?"
+            answer: "A properly configured and accessible network share is needed. This can be an NFS server or an SSH-accessible system where crash dumps can be stored remotely. Ensuring network connectivity and write permissions from the cluster nodes to the storage location is essential."
+
+      - context: "Early Kdump Configuration"
+        questions_and_answers:
+          - question: "Which file must be edited to enable earlykdump?"
+            answer: "To enable earlykdump, you need to edit the `/etc/sysconfig/kdump` configuration file. This file allows you to define parameters that instruct the system to initialize kdump early in the boot process, making it more reliable in capturing crash data in critical scenarios."
+
+          - question: "What parameter is used in kdump configuration to activate earlykdump?"
+            answer: "The parameter `KDUMP_COMMANDLINE_APPEND=\"earlykdump\"` should be set in `/etc/sysconfig/kdump`. This tells the system to use earlykdump functionality, which initializes the crash kernel and its dependencies earlier than the standard kdump process."
+
+          - question: "What is a recommended minimal kdump command line for earlykdump?"
+            answer: "A recommended minimal kdump command line is `irqpoll maxcpus=1 reset_devices`. This configuration ensures better crash capture reliability by limiting CPU usage, resetting devices, and improving interrupt handling in the crash kernel environment."
+
+      - context: "Configuring Network Targets for Crash Dumps"
+        questions_and_answers:
+          - question: "Where are crash dumps stored when using NFS?"
+            answer: "When using NFS for crash dump storage, the dumps are saved to the directory specified in the kdump configuration file under the `nfs <server>:/exported/path` directive. For example, if configured as `nfs 10.10.10.5:/kdump`, the crash dump will be stored in the `/kdump` directory on the NFS server at IP 10.10.10.5."
+
+          - question: "How is SSH access prepared for crash dump storage?"
+            answer: "To configure SSH as a crash dump target, key-based authentication must be set up between the local machine and the remote server. This is done using the commands `ssh-keygen` to generate a key pair and `ssh-copy-id user@remote-server` to copy the public key to the remote server, enabling passwordless access for the kdump process."
+
+          - question: "What command is used to apply kdump changes after configuring network targets?"
+            answer: "After updating the kdump configuration to use either NFS or SSH as the target, the changes are applied by restarting the kdump service using `sudo systemctl restart kdump`. This ensures the updated settings are loaded and active for future crash events."
+
+      - context: "Delayed Fencing and Crash Notification in PCS Cluster"
+        questions_and_answers:
+          - question: "How do you configure a fencing delay in PCS?"
+            answer: "You can configure fencing delay in PCS by running the command `pcs stonith update <stonith-device-name> pcmk_delay_max=60`, which sets the maximum delay in seconds before the fencing operation is executed. This delay allows time for the crash dump to be collected before the node is forcibly rebooted."
+
+          - question: "What is the purpose of fence_kdump_nodes?"
+            answer: "`fence_kdump_nodes` is a fencing agent that integrates with the kdump crash notification system. Its purpose is to inform the cluster that a node has crashed and is actively dumping memory, allowing other nodes to delay fencing and wait until the dump is complete. This helps preserve crash data for diagnostics."
+
+          - question: "What package must be installed to use fence_kdump_nodes?"
+            answer: "To use `fence_kdump_nodes`, the package `fence-agents-kdump` must be installed on the system. This package provides the necessary scripts and fencing agents for integrating kdump crash notification with the PCS cluster’s fencing mechanism."
+
