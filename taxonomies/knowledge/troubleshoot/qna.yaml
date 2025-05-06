@@ -48,3 +48,7 @@ seed_examples:
            ssh user@remote-server
          please note root users ssh key need to be added on target machine 
            ssh-copy-id user@remote-server     
+       - question: |
+         How to check configuration of kdump ?
+        answer: |
+         Run the command "sudo systemctl status kdump"
